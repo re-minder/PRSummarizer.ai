@@ -1,0 +1,26 @@
+# Core dependencies for PR Summarizer Agent
+camel-ai>=0.2.46
+PyGithub>=1.59.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# FastAPI and async dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+httpx>=0.24.0
+
+# Async support
+asyncio>=3.4.3
+
+# Development and testing
+pytest>=7.0.0
+black>=23.0.0
+ruff>=0.1.0
+
+# Optional web framework (used in some parts)
+Flask>=2.0.0
+
+# Web tools extension for camel-ai
+# This provides additional capabilities for web-based operations
+# Note: camel-ai[web_tools] includes camel-ai as dependency

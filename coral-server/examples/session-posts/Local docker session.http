@@ -1,0 +1,69 @@
+POST http://localhost:5555/api/v1/sessions
+Content-Type: application/json
+
+{
+  "applicationId": "pr-summarizer-app",
+  "privacyKey": "pr-analysis-key",
+  "agentGraphRequest": {
+    "agents": [
+      {
+        "id": {"name": "orchestrator-agent", "version": "1.0.0"},
+        "name": "orchestrator-agent",
+        "coralPlugins": [],
+        "provider": {"type": "local", "runtime": "executable"},
+        "blocking": true,
+        "options": {
+          "ORCHESTRATOR_API_KEY": {"type": "string", "value": "{{ORCHESTRATOR_API_KEY}}"},
+          "GITHUB_TOKEN": {"type": "string", "value": "{{GITHUB_TOKEN}}"}
+        },
+        "customToolAccess": []
+      },
+      {
+        "id": {"name": "summarizer-agent", "version": "1.0.0"},
+        "name": "summarizer-agent",
+        "coralPlugins": [],
+        "provider": {"type": "local", "runtime": "executable"},
+        "blocking": true,
+        "options": {
+          "SUMMARIZER_API_KEY": {"type": "string", "value": "{{SUMMARIZER_API_KEY}}"},
+          "GITHUB_TOKEN": {"type": "string", "value": "{{GITHUB_TOKEN}}"}
+        },
+        "customToolAccess": []
+      },
+      {
+        "id": {"name": "risk-agent", "version": "1.0.0"},
+        "name": "risk-agent",
+        "coralPlugins": [],
+        "provider": {"type": "local", "runtime": "executable"},
+        "blocking": true,
+        "options": {
+          "RISK_API_KEY": {"type": "string", "value": "{{RISK_API_KEY}}"},
+          "GITHUB_TOKEN": {"type": "string", "value": "{{GITHUB_TOKEN}}"}
+        },
+        "customToolAccess": []
+      },
+      {
+        "id": {"name": "voice-agent", "version": "1.0.0"},
+        "name": "voice-agent",
+        "coralPlugins": [],
+        "provider": {"type": "local", "runtime": "executable"},
+        "blocking": true,
+        "options": {
+          "VOICE_API_KEY": {"type": "string", "value": "{{VOICE_API_KEY}}"},
+          "GITHUB_TOKEN": {"type": "string", "value": "{{GITHUB_TOKEN}}"},
+          "ELEVENLABS_API_KEY": {"type": "string", "value": "{{ELEVENLABS_API_KEY}}"},
+          "ELEVENLABS_VOICE_ID": {"type": "string", "value": "{{ELEVENLABS_VOICE_ID}}"},
+          "ELEVENLABS_BASE_URL": {"type": "string", "value": "https://api.elevenlabs.io/v1"},
+          "ELEVENLABS_MODEL_ID": {"type": "string", "value": "eleven_turbo_v2_5"},
+          "VOICE_OVER_DIR": {"type": "string", "value": "voice_over_outputs"}
+        },
+        "customToolAccess": []
+      }
+    ],
+    "customTools": {},
+    "groups": [["orchestrator-agent", "summarizer-agent", "risk-agent", "voice-agent"]]
+  }
+}
+
+
+###

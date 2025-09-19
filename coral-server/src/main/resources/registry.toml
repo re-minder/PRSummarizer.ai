@@ -1,0 +1,18 @@
+# Coral Server Agent Registry
+# This file defines all available agents for the Coral Server
+
+# =================================================================
+# PR SUMMARIZER MULTI-AGENT SYSTEM
+# =================================================================
+
+[[local-agent]]
+path = "../agents/orchestrator"
+
+[[local-agent]]
+path = "../agents/summarizer"
+
+[[local-agent]]
+path = "../agents/risk"
+
+[[local-agent]]
+path = "../agents/voice"

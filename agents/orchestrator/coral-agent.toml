@@ -1,0 +1,14 @@
+[agent]
+name = "orchestrator-agent"
+version = "1.0.0"
+description = "PR Summarizer Orchestrator Agent - Coordinates user interaction and workflow management"
+
+[options]
+ORCHESTRATOR_API_KEY = { type = "string", description = "NEBIUS API Key for orchestrator agent" }
+GITHUB_TOKEN = { type = "string", description = "GitHub Personal Access Token for PR fetching" }
+CORAL_CONNECTION_URL = { type = "string", description = "Coral Server connection URL (provided by Coral Server)", default = "" }
+CORAL_PROMPT_SYSTEM = { type = "string", description = "Additional system prompt for Coral integration", default = "" }
+CORAL_AGENT_ID = { type = "string", description = "Coral agent identifier", default = "orchestrator-agent" }
+
+[runtimes.executable]
+command = ["bash", "../agents/venv.sh", "agents/orchestrator_agent.py"]

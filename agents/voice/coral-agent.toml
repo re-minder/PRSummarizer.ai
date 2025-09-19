@@ -1,0 +1,18 @@
+[agent]
+name = "voice-agent"
+version = "1.0.0"
+description = "Voice Generation Agent - Converts text content to high-quality voice-overs using ElevenLabs"
+
+[options]
+VOICE_API_KEY = { type = "string", description = "AIML API Key for voice agent (optional - defaults to summarizer key)" }
+GITHUB_TOKEN = { type = "string", description = "GitHub Personal Access Token for PR fetching" }
+ELEVENLABS_API_KEY = { type = "string", description = "ElevenLabs API Key for text-to-speech generation" }
+ELEVENLABS_VOICE_ID = { type = "string", description = "ElevenLabs Voice ID for consistent voice selection" }
+ELEVENLABS_BASE_URL = { type = "string", description = "ElevenLabs API base URL", default = "https://api.elevenlabs.io/v1" }
+ELEVENLABS_MODEL_ID = { type = "string", description = "ElevenLabs model to use", default = "eleven_turbo_v2_5" }
+VOICE_OVER_DIR = { type = "string", description = "Directory for generated voice files", default = "voice_over_outputs" }
+CORAL_CONNECTION_URL = { type = "string", description = "Coral Server connection URL (provided by Coral Server)", default = "" }
+CORAL_PROMPT_SYSTEM = { type = "string", description = "Additional system prompt for Coral integration", default = "" }
+
+[runtimes.executable]
+command = ["bash", "../agents/venv.sh", "agents/voice_agent.py"]
