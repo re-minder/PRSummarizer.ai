@@ -55,7 +55,7 @@ export const useSSEConnection = ({
     retryCountRef.current = 0;
 
     const apiUrl = (window as any).REACT_APP_API_URL || 'http://localhost:8000';
-    const url = `${apiUrl}/analyze/stream?prompt=${encodeURIComponent(prompt)}`;
+    const url = `${apiUrl}/prompt?message=${encodeURIComponent(prompt)}`;
 
     const createConnection = () => {
       const source = new EventSource(url);

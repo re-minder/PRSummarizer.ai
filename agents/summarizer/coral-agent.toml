@@ -3,11 +3,23 @@ name = "summarizer-agent"
 version = "1.0.0"
 description = "PR Summarizer Agent - Provides comprehensive GitHub PR summaries and analysis"
 
-[options]
-SUMMARIZER_API_KEY = { type = "string", description = "AIML API Key for summarizer agent" }
-GITHUB_TOKEN = { type = "string", description = "GitHub Personal Access Token for PR fetching" }
-CORAL_CONNECTION_URL = { type = "string", description = "Coral Server connection URL (provided by Coral Server)", default = "" }
-CORAL_PROMPT_SYSTEM = { type = "string", description = "Additional system prompt for Coral integration", default = "" }
+[options.SUMMARIZER_API_KEY]
+type = "string"
+description = "AIML API Key for summarizer agent"
+
+[options.GITHUB_TOKEN]
+type = "string"
+description = "GitHub Personal Access Token for PR fetching"
+
+[options.CORAL_CONNECTION_URL]
+type = "string"
+description = "Coral Server connection URL (provided by Coral Server)"
+default = ""
+
+[options.CORAL_PROMPT_SYSTEM]
+type = "string"
+description = "Additional system prompt for Coral integration"
+default = ""
 
 [runtimes.executable]
 command = ["bash", "../agents/venv.sh", "agents/summarizer_agent.py"]

@@ -57,26 +57,73 @@ async def main():
         # Step the agent continuously
         for _ in range(AGENT_LOOP_ITERATIONS):  # Limit for testing, should be infinite in production
             resp = await camel_agent.astep(get_user_message())
+            if (not resp.msgs):
+                continue
             msgzero = resp.msgs[0]
             msgzerojson = msgzero.to_dict()
             print(f"Orchestrator: {msgzerojson}")
             sleep(AGENT_SLEEP_TIME)
 
 async def create_orchestrator_agent(connected_mcp_toolkit):
-    """Create orchestrator agent with MCP communication tools only."""
-    # Orchestrator only gets MCP tools for communication - no domain-specific tools
+    """Create orchestrator agent with MCP tools from Coral Server."""
+
+    # Get all tools from Coral Server (includes both MCP tools and custom tools)
     tools = connected_mcp_toolkit.get_tools()
 
     sys_msg = (
         f"""
-            You are a helpful assistant responsible for interacting with the user and coordinating PR analysis workflows with other agents. You can interact with other agents using the chat tools.
-            User interaction and PR analysis coordination is your speciality. You identify as "orchestrator-agent".
+            You are the orchestrator agent for the PR Summarizer system. You coordinate user interaction and workflow management.
 
-            As a user interaction agent, only you can interact with the user.
+            WORKFLOW FOR WEB INTERFACE REQUESTS:
+            When you receive a user request:
+            1. Send initial progress update using send_action_update tool
+            2. Parse the request and extract PR URL or information
+            3. Coordinate with appropriate agents using mentions:
+               - Always mention summarizer-agent for PR analysis
+               - Mention risk-agent if user wants security assessment
+               - Mention voice-agent if user wants voice generation
+            4. Send progress updates for each agent interaction
+            5. Collect all responses from mentioned agents
+            6. Send final results using webhook_callback tool
 
-            Make sure that all PR analysis comes from reliable specialized agents and that all information is accurate. Make sure your responses are much more reliable than guesses! You should make sure no agents are guessing too, by directing the relevant specialized agents to do each part of a PR analysis task. Do a refresh of the available agents before asking the user for input.
+            AVAILABLE CUSTOM TOOLS:
+            You have access to these custom tools that communicate directly with the backend:
 
-            Make sure to put the name of the agent(s) you are talking to in the mentions field of the send message tool.
+            send_action_update:
+            - agent_id: "orchestrator-agent" (your ID)
+            - action: Brief action description
+            - detail: Detailed description
+            - status: "running", "completed", or "failed"
+
+            send_completion:
+            - agent_id: "orchestrator-agent"
+            - summary: Full analysis summary
+            - risk_report: Security assessment (if available)
+            - voice_url: Audio file URL (if available)
+            - output: Final combined output
+
+            webhook_callback:
+            - request_id: Extract from "User Request (ID: ...)" format
+            - summary: PR analysis summary
+            - risk_report: Security risk assessment
+            - voice_url: URL to generated voice file
+
+            EXAMPLE WORKFLOW:
+            User message: "User Request (ID: abc123): Analyze https://github.com/org/repo/pull/123"
+            1. send_action_update(agent_id="orchestrator-agent", action="Starting PR Analysis", detail="Processing GitHub PR request", status="running")
+            2. @mention summarizer-agent to analyze the PR
+            3. send_action_update(agent_id="orchestrator-agent", action="Getting PR Summary", detail="Waiting for summarizer response", status="running")
+            4. Wait for summarizer response
+            5. webhook_callback(request_id="abc123", summary="...", risk_report="...", voice_url="...")
+
+            IMPORTANT:
+            - Always extract request_id from "User Request (ID: ...)" format
+            - Use send_action_update for progress updates
+            - Use webhook_callback for final results
+            - Your agent_id is "orchestrator-agent"
+            - Coordinate with other agents via coral_send_message mentions
+            - Wait for responses using coral_wait_for_mentions
+            - Provide comprehensive summaries based on agent responses, not your own analysis
 
             {os.getenv("CORAL_PROMPT_SYSTEM", default="")}
 
