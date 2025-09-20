@@ -1,5 +1,37 @@
 """Shared prompts and messages for PR Summarizer multi-agent system."""
 
+import os
+import requests
+from urllib.parse import urlparse, parse_qs
+
+def get_session_id_from_coral_url():
+    """Extract session ID from Coral connection URL"""
+    coral_url = os.getenv("CORAL_CONNECTION_URL")
+    if not coral_url:
+        return None
+
+    # Parse the URL to extract session ID
+    # Coral URL format is typically: http://localhost:5555/api/v1/session/{sessionId}/ws?applicationId=...
+    try:
+        parsed = urlparse(coral_url)
+        path_parts = parsed.path.split('/')
+
+        # Find session ID in path - it's usually after /session/
+        if 'session' in path_parts:
+            session_index = path_parts.index('session')
+            if session_index + 1 < len(path_parts):
+                return path_parts[session_index + 1]
+
+        # Also check query parameters for sessionId
+        query_params = parse_qs(parsed.query)
+        if 'sessionId' in query_params:
+            return query_params['sessionId'][0]
+
+    except Exception as e:
+        print(f"❌ Error parsing session ID from Coral URL: {e}")
+
+    return None
+
 def get_tools_description():
     return """
 You have access to communication tools to interact with other agents.
@@ -27,6 +59,28 @@ For PR analysis tasks, always mention the appropriate agents based on user requi
     """
 
 def get_user_message():
+    """Get user message from backend queue via HTTP polling or return automated message"""
+    # Try to get session ID from Coral environment variables (preferred) or parse from URL
+    session_id = os.getenv("CORAL_SESSION_ID") or get_session_id_from_coral_url()
+
+    if session_id:
+        try:
+            # Poll backend for user messages for this session
+            response = requests.get(
+                f"http://localhost:8000/session/{session_id}/message",
+                timeout=2
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("has_message", False):
+                    message = data.get("message", "")
+                    print(f"📨 Retrieved user message from backend: {message}")
+                    return message
+        except Exception as e:
+            print(f"⚠️  Could not retrieve user message from backend: {e}")
+
+    # Fallback to automated message if no session or no user message
     return "[automated] continue collaborating with other agents. make sure to mention agents you intend to communicate with"
 
 def get_orchestrator_tools_description():

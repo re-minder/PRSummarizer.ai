@@ -44,6 +44,7 @@ class MessageStore:
         self.messages: List[Dict[str, Any]] = []
         self.connections: List[asyncio.Queue] = []
         self.sessions: Dict[str, Dict[str, Any]] = {}
+        self.user_message_queues: Dict[str, List[str]] = {}  # sessionId -> list of user messages
 
     def add_connection(self) -> asyncio.Queue:
         queue = asyncio.Queue()
@@ -66,6 +67,22 @@ class MessageStore:
 
     def create_session(self, session_id: str, session_data: Dict[str, Any]):
         self.sessions[session_id] = session_data
+        self.user_message_queues[session_id] = []  # Initialize message queue for this session
+
+    def add_user_message(self, session_id: str, message: str):
+        """Add a user message to the session's queue"""
+        if session_id not in self.user_message_queues:
+            self.user_message_queues[session_id] = []
+        self.user_message_queues[session_id].append(message)
+        print(f"📝 Added user message to session {session_id}: {message}")
+
+    def get_user_message(self, session_id: str) -> str:
+        """Get the next user message for a session (FIFO)"""
+        if session_id in self.user_message_queues and self.user_message_queues[session_id]:
+            message = self.user_message_queues[session_id].pop(0)
+            print(f"📤 Retrieved user message for session {session_id}: {message}")
+            return message
+        return None
 
     def get_session(self, session_id: str) -> Dict[str, Any]:
         return self.sessions.get(session_id, {})
@@ -293,10 +310,9 @@ def send_message_to_orchestrator(session_id: str, application_id: str, privacy_k
         request_id = str(uuid.uuid4())
         formatted_message = f"User Request (ID: {request_id}): {message}"
 
-        # Note: This is a simplified approach - sending message would require MCP protocol
-        # For now, we just generate a request ID and let the orchestrator handle it via custom tools
-        print(f"📤 Generated request for orchestrator: {formatted_message}")
-        print(f"🔗 Session: {session_id}, App: {application_id}, Privacy: {privacy_key}")
+        # Store the message in the session's queue for the orchestrator to poll
+        message_store.add_user_message(session_id, formatted_message)
+        print(f"📤 Queued request for orchestrator in session {session_id}: {formatted_message}")
 
         # Return the request ID so agents can reference it
         return request_id
@@ -527,6 +543,15 @@ async def root():
             "GET /health": "Health check"
         }
     }
+
+@app.get("/session/{session_id}/message")
+async def get_user_message_endpoint(session_id: str):
+    """Get the next user message for a session (for agents to poll)"""
+    message = message_store.get_user_message(session_id)
+    if message:
+        return {"message": message, "has_message": True}
+    else:
+        return {"message": None, "has_message": False}
 
 if __name__ == "__main__":
     print("🚀 Starting Agent Communication Backend...")
