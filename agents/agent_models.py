@@ -15,9 +15,29 @@ load_dotenv()
 # ORCHESTRATOR AGENT MODEL (User Interaction)
 # =================================================================
 
+# ORCHESTRATOR_MODEL = ModelFactory.create(
+#     model_platform=ModelPlatformType.NEBIUS,
+#     model_type="openai/gpt-oss-120b",
+#     api_key=os.getenv("ORCHESTRATOR_API_KEY"),
+#     model_config_dict={
+#         "temperature": 0.1,
+#         "max_tokens": 2000,
+#     },
+# )
+
+# ORCHESTRATOR_MODEL = ModelFactory.create(
+#     model_platform=ModelPlatformType.AIML,
+#     model_type="openai/gpt-5-2025-08-07",
+#     api_key=os.getenv("ORCHESTRATOR_API_KEY"),
+#     model_config_dict={
+#         "temperature": 0.1,
+#         "max_tokens": 2000,
+#     },
+# )
+
 ORCHESTRATOR_MODEL = ModelFactory.create(
-    model_platform=ModelPlatformType.NEBIUS,
-    model_type="openai/gpt-oss-120b",
+    model_platform=ModelPlatformType.AIML,
+    model_type="openai/gpt-5-nano-2025-08-07",
     api_key=os.getenv("ORCHESTRATOR_API_KEY"),
     model_config_dict={
         "temperature": 0.1,
@@ -40,14 +60,24 @@ ORCHESTRATOR_MODEL = ModelFactory.create(
 # )
 
 SUMMARIZER_MODEL = ModelFactory.create(
-    model_platform=ModelPlatformType.NEBIUS,
-    model_type="openai/gpt-oss-120b",
+    model_platform=ModelPlatformType.AIML,
+    model_type="openai/gpt-5-nano-2025-08-07",
     api_key=os.getenv("SUMMARIZER_API_KEY"),
     model_config_dict={
         "temperature": 0.1,
         "max_tokens": 3000,
     },
 )
+
+# SUMMARIZER_MODEL = ModelFactory.create(
+#     model_platform=ModelPlatformType.NEBIUS,
+#     model_type="openai/gpt-oss-120b",
+#     api_key=os.getenv("SUMMARIZER_API_KEY"),
+#     model_config_dict={
+#         "temperature": 0.1,
+#         "max_tokens": 3000,
+#     },
+# )
 
 # RISK_MODEL = ModelFactory.create(
 #     model_platform=ModelPlatformType.AIML,
@@ -60,14 +90,24 @@ SUMMARIZER_MODEL = ModelFactory.create(
 # )
 
 RISK_MODEL = ModelFactory.create(
-    model_platform=ModelPlatformType.NEBIUS,
-    model_type="openai/gpt-oss-120b",
+    model_platform=ModelPlatformType.AIML,
+    model_type="openai/gpt-5-nano-2025-08-07",
     api_key=os.getenv("RISK_API_KEY"),
     model_config_dict={
         "temperature": 0.1,
         "max_tokens": 3000,
     },
 )
+
+# RISK_MODEL = ModelFactory.create(
+#     model_platform=ModelPlatformType.NEBIUS,
+#     model_type="openai/gpt-oss-120b",
+#     api_key=os.getenv("RISK_API_KEY"),
+#     model_config_dict={
+#         "temperature": 0.1,
+#         "max_tokens": 3000,
+#     },
+# )
 
 # VOICE_MODEL = ModelFactory.create(
 #     model_platform=ModelPlatformType.AIML,
@@ -80,14 +120,24 @@ RISK_MODEL = ModelFactory.create(
 # )
 
 VOICE_MODEL = ModelFactory.create(
-    model_platform=ModelPlatformType.NEBIUS,
-    model_type="openai/gpt-oss-120b",
+    model_platform=ModelPlatformType.AIML,
+    model_type="openai/gpt-5-nano-2025-08-07",
     api_key=os.getenv("VOICE_API_KEY", os.getenv("SUMMARIZER_API_KEY")),  # Fallback to summarizer key
     model_config_dict={
         "temperature": 0.1,
         "max_tokens": 2000,
     },
 )
+
+# VOICE_MODEL = ModelFactory.create(
+#     model_platform=ModelPlatformType.NEBIUS,
+#     model_type="openai/gpt-oss-120b",
+#     api_key=os.getenv("VOICE_API_KEY", os.getenv("SUMMARIZER_API_KEY")),  # Fallback to summarizer key
+#     model_config_dict={
+#         "temperature": 0.1,
+#         "max_tokens": 2000,
+#     },
+# )
 
 # =================================================================
 # AGENT COMMUNICATION SETTINGS

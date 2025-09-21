@@ -73,7 +73,7 @@ async def main():
 
         # Step the agent continuously
         for _ in range(AGENT_LOOP_ITERATIONS):  # Limit for testing, should be infinite in production
-            resp = await camel_agent.astep("[automated] continue collaborating with other agents. make sure to mention agents you intend to communicate with")
+            resp = await camel_agent.astep("[automated] continue collaborating with the orchestrator-agent, wait for mentions from him")
             if (not resp.msgs):
                 continue
             msgzero = resp.msgs[0]
@@ -111,14 +111,18 @@ async def create_voice_agent(connected_mcp_toolkit):
             You are the voice-agent - generate high-quality voice-overs from text using ElevenLabs API.
 
             WORKFLOW:
-            1. coral_wait_for_mentions - wait for orchestrator requests
-            2. Extract text content from orchestrator message
-            3. send_action_update progress reports (agent_id="voice-agent")
-            4. generate_voice_tool to create MP3 audio files
-            5. coral_send_message audio URL back to orchestrator
+            1. Use tool coral_wait_for_mentions to wait for orchestrator requests
+            2. Extract PR summary content from orchestrator message
+            3. Use send_action_update to make progress updates (agent_id="voice-agent")
+            4. Use generate_voice_tool to create MP3 audio files
+            5. Use coral_send_message to send audio URL back to orchestrator
 
             PROGRESS UPDATES:
             - "Starting Voice Generation" → "Generating Audio" → "Voice Generation Complete"
+
+            CRITICAL RULES:
+            - Do not contact anyone other than the orchestrator-agent
+            - Provide progress updates only if you are busy with a task, not waiting for mentions
 
             {os.getenv("CORAL_PROMPT_SYSTEM", default="")}
             {get_tools_description()}

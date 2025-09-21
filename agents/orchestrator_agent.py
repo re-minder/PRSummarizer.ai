@@ -64,11 +64,26 @@ async def main():
             print(f"Orchestrator: {msgzerojson}")
             sleep(AGENT_SLEEP_TIME)
 
+def remove_strict_from_tools(tools_list):
+    """Remove 'strict' parameter from all tools - AIML API doesn't support it."""
+    for tool in tools_list:
+        if hasattr(tool, 'get_openai_tool_schema'):
+            tool_schema = tool.get_openai_tool_schema()
+            if 'strict' in tool_schema:
+                del tool_schema['strict']
+            if 'function' in tool_schema and 'strict' in tool_schema['function']:
+                del tool_schema['function']['strict']
+            tool.openai_tool_schema = tool_schema
+    return tools_list
+
 async def create_orchestrator_agent(connected_mcp_toolkit):
     """Create orchestrator agent with MCP tools from Coral Server."""
 
     # Get all tools from Coral Server (includes both MCP tools and custom tools)
-    tools = connected_mcp_toolkit.get_tools()
+    mcp_tools = connected_mcp_toolkit.get_tools()
+
+    # WORKAROUND: Remove 'strict' parameter that AIML doesn't support from ALL tools
+    tools = remove_strict_from_tools(mcp_tools)
 
     sys_msg = (
         f"""
@@ -78,9 +93,9 @@ async def create_orchestrator_agent(connected_mcp_toolkit):
             1. Extract request_id from "User Request (ID: ...)" format
             2. Send progress updates via send_action_update (agent_id="orchestrator-agent")
             3. Always call summarizer-agent first for PR analysis
-            4. Call voice-agent ONLY if user mentions "voice"/"audio"/"sound" - pass summary text
-            5. Call risk-agent ONLY if user mentions "risk"/"security"/"vulnerability"
-            6. Send final results via webhook_callback with exact agent content (not summaries)
+            4. Call voice-agent with a summary you got from summarizer-agent if user wants an audio
+            5. Call risk-agent if user wants security assessment
+            6. Once you have final results from all the agents working on a task - send final results via webhook_callback with response from each agent (summary of PR from summarizer-agent, risk assesment of PR from risk-agent, audio file path (URL) from voice-agent)
 
             TOOLS:
             - send_action_update: Progress updates to frontend
@@ -90,9 +105,9 @@ async def create_orchestrator_agent(connected_mcp_toolkit):
             - coral_wait_for_mentions: Receive agent responses
 
             CRITICAL RULES:
+            - Use coral_send_message only after you created a thread using coral_create_thread tool
             - Forward exact agent responses, not acknowledgments
-            - Extract voice URLs from "File saved at: /audio/..." responses
-            - Never call agents unless user explicitly requests their functionality
+            - Extract voice URLs from voice-agent responses
 
             {os.getenv("CORAL_PROMPT_SYSTEM", default="")}
             {get_orchestrator_tools_description()}

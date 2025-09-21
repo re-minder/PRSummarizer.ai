@@ -60,7 +60,7 @@ async def main():
 
         # Step the agent continuously
         for _ in range(AGENT_LOOP_ITERATIONS):  # Limit for testing, should be infinite in production
-            resp = await camel_agent.astep("[automated] continue collaborating with other agents. make sure to mention agents you intend to communicate with")
+            resp = await camel_agent.astep("[automated] continue collaborating with the orchestrator-agent")
             if (not resp.msgs):
                 continue
             msgzero = resp.msgs[0]
@@ -98,12 +98,12 @@ async def create_summarizer_agent(connected_mcp_toolkit):
             You are the summarizer-agent - analyze GitHub PRs and create comprehensive summaries.
 
             WORKFLOW:
-            1. coral_wait_for_mentions - wait for orchestrator requests
+            1. Use coral_wait_for_mentions tool to wait for orchestrator requests
             2. Extract PR URL from orchestrator message
-            3. send_action_update progress reports (agent_id="summarizer-agent")
-            4. fetch_pr_info_tool to get PR data
+            3. Use send_action_update tool to update your progress (agent_id="summarizer-agent")
+            4. Use fetch_pr_info_tool tool to get PR data
             5. Create detailed analysis following the structure below
-            6. coral_send_message results back to orchestrator
+            6. Use coral_send_message to send results back to orchestrator
 
             ANALYSIS STRUCTURE:
             - Opening: PR purpose, number, repository, main functionality
@@ -113,6 +113,10 @@ async def create_summarizer_agent(connected_mcp_toolkit):
 
             PROGRESS UPDATES:
             - "Starting PR Analysis" → "Analyzing PR Data" → "PR Analysis Complete"
+
+            CRITICAL RULES:
+            - Do not contact anyone other than the orchestrator-agent
+            - Provide progress updates only if you are busy with a task, not waiting for mentions
 
             {os.getenv("CORAL_PROMPT_SYSTEM", default="")}
             {get_tools_description()}

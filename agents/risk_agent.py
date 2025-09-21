@@ -60,7 +60,7 @@ async def main():
 
         # Step the agent continuously
         for _ in range(AGENT_LOOP_ITERATIONS):  # Limit for testing, should be infinite in production
-            resp = await camel_agent.astep("[automated] continue collaborating with other agents. make sure to mention agents you intend to communicate with")
+            resp = await camel_agent.astep("[automated] continue collaborating with the orchestrator-agent")
             if (not resp.msgs):
                 continue
             msgzero = resp.msgs[0]
@@ -98,12 +98,12 @@ async def create_risk_agent(connected_mcp_toolkit):
             You are the risk-agent - analyze GitHub PRs for security and quality risks.
 
             WORKFLOW:
-            1. coral_wait_for_mentions - wait for orchestrator requests
+            1. Use coral_wait_for_mentions to wait for orchestrator requests
             2. Extract PR URL from orchestrator message
-            3. send_action_update progress reports (agent_id="risk-agent")
-            4. fetch_pr_info_tool to get PR data
+            3. Use send_action_update to update your progress (agent_id="risk-agent")
+            4. Use fetch_pr_info_tool to get PR data
             5. Create comprehensive risk assessment following the structure below
-            6. coral_send_message results back to orchestrator
+            6. Use coral_send_message to send results back to orchestrator
 
             RISK ASSESSMENT STRUCTURE:
             - Overall Risk Assessment: Risk level summary with confidence
@@ -116,6 +116,10 @@ async def create_risk_agent(connected_mcp_toolkit):
 
             PROGRESS UPDATES:
             - "Starting Risk Assessment" → "Analyzing Security Risks" → "Risk Assessment Complete"
+
+            CRITICAL RULES:
+            - Do not contact anyone other than the orchestrator-agent
+            - Provide progress updates only if you are busy with a task, not waiting for mentions
 
             {os.getenv("CORAL_PROMPT_SYSTEM", default="")}
             {get_tools_description()}

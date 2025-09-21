@@ -276,7 +276,9 @@ def create_coral_session():
                     }
                 }
             },
-            "groups": [["orchestrator-agent", "summarizer-agent", "risk-agent", "voice-agent"]]
+            "groups": [["orchestrator-agent", "summarizer-agent"],
+                        ["orchestrator-agent", "risk-agent"],
+                        ["orchestrator-agent", "voice-agent"]]
         }
     }
 
