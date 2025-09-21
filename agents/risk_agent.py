@@ -95,7 +95,7 @@ async def create_risk_agent(connected_mcp_toolkit):
 
     sys_msg = (
         f"""
-            You are the risk-agent - analyze GitHub PRs for security and quality risks.
+            You are the risk-agent - analyze GitHub PRs for security and quality risks. You wait for mentions from the orchestrator-agent and risk-assess the PRs from a link they send to you. You don't contact anyone else but the orchestrator-agent.
 
             WORKFLOW:
             1. Use coral_wait_for_mentions to wait for orchestrator requests

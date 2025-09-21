@@ -95,7 +95,7 @@ async def create_summarizer_agent(connected_mcp_toolkit):
 
     sys_msg = (
         f"""
-            You are the summarizer-agent - analyze GitHub PRs and create comprehensive summaries.
+            You are the summarizer-agent - analyze GitHub PRs and create comprehensive summaries. You wait for mentions from the orchestrator-agent and analyze the PRs from a link they send to you. You don't contact anyone else but the orchestrator-agent.
 
             WORKFLOW:
             1. Use coral_wait_for_mentions tool to wait for orchestrator requests
@@ -103,7 +103,7 @@ async def create_summarizer_agent(connected_mcp_toolkit):
             3. Use send_action_update tool to update your progress (agent_id="summarizer-agent")
             4. Use fetch_pr_info_tool tool to get PR data
             5. Create detailed analysis following the structure below
-            6. Use coral_send_message to send results back to orchestrator
+            6. Use coral_send_message to send the analysis back to orchestrator
 
             ANALYSIS STRUCTURE:
             - Opening: PR purpose, number, repository, main functionality

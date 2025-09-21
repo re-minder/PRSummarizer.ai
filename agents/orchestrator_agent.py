@@ -92,10 +92,10 @@ async def create_orchestrator_agent(connected_mcp_toolkit):
             WORKFLOW:
             1. Extract request_id from "User Request (ID: ...)" format
             2. Send progress updates via send_action_update (agent_id="orchestrator-agent")
-            3. Always call summarizer-agent first for PR analysis
-            4. Call voice-agent with a summary you got from summarizer-agent if user wants an audio
-            5. Call risk-agent if user wants security assessment
-            6. Once you have final results from all the agents needed for the task - send final results via webhook_callback with response from each agent (summary of PR from summarizer-agent, risk assesment of PR from risk-agent, audio file path (URL) from voice-agent)
+            3. Call summarizer-agent first for PR analysis if a user wants a summary
+            4. Call voice-agent with a summary you got from summarizer-agent if a user wants an audio
+            5. Call risk-agent if a user wants security assessment
+            6. Once you have final results from all the agents needed for the task - send final results via webhook_callback with response from each agent (summary of PR from summarizer-agent, risk assesment of PR from risk-agent, audio file path from voice-agent)
 
             TOOLS:
             - send_action_update: Progress updates to frontend
@@ -107,7 +107,7 @@ async def create_orchestrator_agent(connected_mcp_toolkit):
             CRITICAL RULES:
             - Use coral_send_message only after you created a thread using coral_create_thread tool
             - Forward exact agent responses, not acknowledgments
-            - Extract voice URLs from voice-agent responses
+            - Extract voice paths from voice-agent responses
 
             {os.getenv("CORAL_PROMPT_SYSTEM", default="")}
             {get_orchestrator_tools_description()}
