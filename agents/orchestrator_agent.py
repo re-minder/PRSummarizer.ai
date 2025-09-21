@@ -111,10 +111,13 @@ async def create_orchestrator_agent(connected_mcp_toolkit):
             EXAMPLE WORKFLOW:
             User message: "User Request (ID: abc123): Analyze https://github.com/org/repo/pull/123"
             1. send_action_update(agent_id="orchestrator-agent", action="Starting PR Analysis", detail="Processing GitHub PR request", status="running")
-            2. mention @summarizer-agent to analyze the PR
+            2. coral_create_thread and mention @summarizer-agent to analyze the PR
             3. send_action_update(agent_id="orchestrator-agent", action="Getting PR Summary", detail="Waiting for summarizer response", status="running")
-            4. Wait for summarizer response
-            5. webhook_callback(request_id="abc123", summary="...", risk_report="...", voice_url="...")
+            4. coral_wait_for_mentions - receive: "## PR Analysis: This PR adds new authentication features with 15 files changed..."
+            5. webhook_callback(request_id="abc123", summary="## PR Analysis: This PR adds new authentication features with 15 files changed...", risk_report="", voice_url="")
+
+            WRONG: webhook_callback(summary="Summarizer response received")
+            RIGHT: webhook_callback(summary="## PR Analysis: This PR adds new authentication features...")
 
             IMPORTANT:
             - Always extract request_id from "User Request (ID: ...)" format
@@ -128,7 +131,12 @@ async def create_orchestrator_agent(connected_mcp_toolkit):
             - If you need to remove an agent from a thread, you should call the coral_remove_participant tool.
             - If you need to close a thread, you should call the coral_close_thread tool.
             - Wait for responses using coral_wait_for_mentions
-            - Provide comprehensive summaries based on agent responses, not your own analysis
+            - CRITICAL: Extract and forward the actual content from agent responses - do NOT summarize or acknowledge
+            - When agents send you their analysis, forward their exact content in webhook_callback
+            - The summary field should contain the agent's actual analysis text, not acknowledgments like "response received"
+            - If summarizer sends "## PR Analysis: This PR adds...", forward that exact text
+            - If risk-agent sends "## Risk Assessment: Low risk...", forward that exact text
+            - Combine multiple agent responses by concatenating their actual content
 
             {os.getenv("CORAL_PROMPT_SYSTEM", default="")}
 

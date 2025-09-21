@@ -346,18 +346,11 @@ async def receive_agent_message(session_id: str, agent_id: str, request_data: di
         detail = request_data.get("detail", "")
         status = request_data.get("status", "running")
 
-        # Determine event type based on the action or status
+        # send_action_update calls are ALWAYS action updates, never final completions
+        # Final completions only come from webhook_callback endpoint
         if status == "failed":
             event_type = "error"
             sse_message = {"error": f"{action}: {detail}"}
-        elif "completion" in action.lower() or "complete" in action.lower():
-            event_type = "complete"
-            sse_message = {
-                "summary": request_data.get("summary", detail),
-                "risk_report": request_data.get("risk_report", ""),
-                "output": request_data.get("output", request_data.get("summary", detail)),
-                "voice_url": request_data.get("voice_url", "")
-            }
         else:
             event_type = "action"
             sse_message = {
