@@ -11,9 +11,9 @@ const PR_URL_PATTERN = /https?:\/\/github\.com\/[\w-]+\/[\w-]+\/pull\/\d+/;
 
 const EXAMPLE_PROMPTS = [
   'Summarize https://github.com/facebook/react/pull/25741',
-  'Analyze risks for https://github.com/vercel/next.js/pull/42069',
+  'Analyze risks for https://github.com/camel-ai/camel/pull/3169',
   'Give me both summary and risks for https://github.com/microsoft/vscode/pull/165270',
-  'Summarize and create voice narration for https://github.com/nodejs/node/pull/45279',
+  'Summarize and create voice narration for https://github.com/nodejs/node/pull/59956',
 ];
 
 const QUICK_ACTIONS = [

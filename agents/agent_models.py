@@ -17,7 +17,7 @@ load_dotenv()
 
 # ORCHESTRATOR_MODEL = ModelFactory.create(
 #     model_platform=ModelPlatformType.NEBIUS,
-#     model_type="openai/gpt-oss-120b",
+#     model_type="Qwen/Qwen3-30B-A3B-Instruct-2507",
 #     api_key=os.getenv("ORCHESTRATOR_API_KEY"),
 #     model_config_dict={
 #         "temperature": 0.1,
@@ -37,7 +37,7 @@ load_dotenv()
 
 ORCHESTRATOR_MODEL = ModelFactory.create(
     model_platform=ModelPlatformType.AIML,
-    model_type="openai/gpt-5-nano-2025-08-07",
+    model_type="gpt-4o",
     api_key=os.getenv("ORCHESTRATOR_API_KEY"),
     model_config_dict={
         "temperature": 0.1,
@@ -61,7 +61,7 @@ ORCHESTRATOR_MODEL = ModelFactory.create(
 
 SUMMARIZER_MODEL = ModelFactory.create(
     model_platform=ModelPlatformType.AIML,
-    model_type="openai/gpt-5-nano-2025-08-07",
+    model_type="gpt-4o",
     api_key=os.getenv("SUMMARIZER_API_KEY"),
     model_config_dict={
         "temperature": 0.1,
@@ -71,7 +71,7 @@ SUMMARIZER_MODEL = ModelFactory.create(
 
 # SUMMARIZER_MODEL = ModelFactory.create(
 #     model_platform=ModelPlatformType.NEBIUS,
-#     model_type="openai/gpt-oss-120b",
+#     model_type="Qwen/Qwen3-30B-A3B-Instruct-2507",
 #     api_key=os.getenv("SUMMARIZER_API_KEY"),
 #     model_config_dict={
 #         "temperature": 0.1,
@@ -91,7 +91,7 @@ SUMMARIZER_MODEL = ModelFactory.create(
 
 RISK_MODEL = ModelFactory.create(
     model_platform=ModelPlatformType.AIML,
-    model_type="openai/gpt-5-nano-2025-08-07",
+    model_type="gpt-4o",
     api_key=os.getenv("RISK_API_KEY"),
     model_config_dict={
         "temperature": 0.1,
@@ -101,7 +101,7 @@ RISK_MODEL = ModelFactory.create(
 
 # RISK_MODEL = ModelFactory.create(
 #     model_platform=ModelPlatformType.NEBIUS,
-#     model_type="openai/gpt-oss-120b",
+#     model_type="Qwen/Qwen3-30B-A3B-Instruct-2507",
 #     api_key=os.getenv("RISK_API_KEY"),
 #     model_config_dict={
 #         "temperature": 0.1,
@@ -121,7 +121,7 @@ RISK_MODEL = ModelFactory.create(
 
 VOICE_MODEL = ModelFactory.create(
     model_platform=ModelPlatformType.AIML,
-    model_type="openai/gpt-5-nano-2025-08-07",
+    model_type="gpt-4o",
     api_key=os.getenv("VOICE_API_KEY", os.getenv("SUMMARIZER_API_KEY")),  # Fallback to summarizer key
     model_config_dict={
         "temperature": 0.1,
@@ -131,7 +131,7 @@ VOICE_MODEL = ModelFactory.create(
 
 # VOICE_MODEL = ModelFactory.create(
 #     model_platform=ModelPlatformType.NEBIUS,
-#     model_type="openai/gpt-oss-120b",
+#     model_type="Qwen/Qwen3-30B-A3B-Instruct-2507",
 #     api_key=os.getenv("VOICE_API_KEY", os.getenv("SUMMARIZER_API_KEY")),  # Fallback to summarizer key
 #     model_config_dict={
 #         "temperature": 0.1,

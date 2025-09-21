@@ -95,7 +95,7 @@ async def create_orchestrator_agent(connected_mcp_toolkit):
             3. Always call summarizer-agent first for PR analysis
             4. Call voice-agent with a summary you got from summarizer-agent if user wants an audio
             5. Call risk-agent if user wants security assessment
-            6. Once you have final results from all the agents working on a task - send final results via webhook_callback with response from each agent (summary of PR from summarizer-agent, risk assesment of PR from risk-agent, audio file path (URL) from voice-agent)
+            6. Once you have final results from all the agents needed for the task - send final results via webhook_callback with response from each agent (summary of PR from summarizer-agent, risk assesment of PR from risk-agent, audio file path (URL) from voice-agent)
 
             TOOLS:
             - send_action_update: Progress updates to frontend
