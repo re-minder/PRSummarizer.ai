@@ -43,14 +43,4 @@ Always-on multi-agent PR copilot built for the Coral Protocol hackathon. The pro
    ```
 6. Visit `http://localhost:3000`, paste a GitHub PR URL, and watch the agent timeline stream updates in real time.
 
-## Demo Tips
-- Use the Action Timeline screenshot (`webapp/web`) alongside Coral Studio view to show the same session in both interfaces.
-- Trigger the voice-over option to play the ElevenLabs narration for judges.
-- Highlight the monetization roadmap (team tiers, Coral marketplace agents, Solana/Jupiter payouts).
 
-## Pitch Assets
-- Slide plan: `presentation_plan.md`
-- Pitch deck (editable): `PRSummarizer_ai_pitch.pptx`
-- Architecture deep dive: `COMPREHENSIVE_ARCHITECTURE_ANALYSIS.md`
-
-Built by the PRSummarizer.ai team for the Coral Protocol hackathon—download, run, and join our Coral agent squad!
