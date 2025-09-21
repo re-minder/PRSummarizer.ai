@@ -38,7 +38,15 @@ def generate_voice_tool(text: str, voice_id: str = None) -> str:
     try:
         result = generate_voice_over(text, voice_id)
         voice_path = result.get("voice_path", "")
-        return f"Voice-over generated successfully. File saved at: {voice_path}"
+
+        # Convert full file path to relative URL for web access
+        # voice_path is like "/path/to/voice_over_outputs/voice_123_456.mp3"
+        # We need to return "/audio/voice_123_456.mp3"
+        import os
+        filename = os.path.basename(voice_path)
+        voice_url = f"/audio/{filename}"
+
+        return f"Voice-over generated successfully. File saved at: {voice_url}"
     except Exception as e:
         return f"Voice generation failed: {str(e)}"
 
@@ -66,6 +74,8 @@ async def main():
         # Step the agent continuously
         for _ in range(AGENT_LOOP_ITERATIONS):  # Limit for testing, should be infinite in production
             resp = await camel_agent.astep("[automated] continue collaborating with other agents. make sure to mention agents you intend to communicate with")
+            if (not resp.msgs):
+                continue
             msgzero = resp.msgs[0]
             msgzerojson = msgzero.to_dict()
             print(f"Voice Agent: {msgzerojson}")
@@ -98,43 +108,19 @@ async def create_voice_agent(connected_mcp_toolkit):
 
     sys_msg = (
         f"""
-            You are the voice-agent, a specialized AI assistant responsible for generating high-quality voice-overs from text content in the PR Summarizer multi-agent system.
+            You are the voice-agent - generate high-quality voice-overs from text using ElevenLabs API.
 
-            ROLE AND WORKFLOW:
-            1. Wait for mentions from orchestrator-agent using coral_wait_for_mentions tool
-            2. When mentioned with text content, generate voice-overs using ElevenLabs API
-            3. Create high-quality MP3 audio files
-            4. Send the voice file URL/path back to the orchestrator via coral_send_message
+            WORKFLOW:
+            1. coral_wait_for_mentions - wait for orchestrator requests
+            2. Extract text content from orchestrator message
+            3. send_action_update progress reports (agent_id="voice-agent")
+            4. generate_voice_tool to create MP3 audio files
+            5. coral_send_message audio URL back to orchestrator
 
-            WHEN MENTIONED BY ORCHESTRATOR:
-            1. Send progress update: send_action_update(agent_id="voice-agent", action="Starting Voice Generation", detail="Processing text-to-speech request", status="running")
-            2. Extract the text content from the orchestrator's message
-            3. Send progress update: send_action_update(agent_id="voice-agent", action="Generating Audio", detail="Converting text to speech with ElevenLabs", status="running")
-            4. Use generate_voice_tool to convert text to speech
-            5. Process the provided text content (summaries, reports, etc.)
-            6. Generate high-quality MP3 audio files using ElevenLabs API
-            7. Handle any errors gracefully and report issues clearly
-            8. Send completion update: send_action_update(agent_id="voice-agent", action="Voice Generation Complete", detail="Audio file ready", status="completed")
-            9. Send the file path/URL of the generated voice-over back to orchestrator using coral_send_message
-
-            IMPORTANT INSTRUCTIONS:
-            - Your agent ID is "voice-agent"
-            - Always wait for mentions from orchestrator-agent - don't initiate conversations
-            - Use coral_wait_for_mentions to receive tasks
-            - Use send_action_update to report progress when actively working on tasks
-            - Use coral_send_message to send your voice generation results back to orchestrator
-            - Provide clear status updates and file paths when generation is successful
-            - Do NOT use webhook_callback tools - only orchestrator uses that
-
-            EXAMPLE INTERACTION:
-            1. coral_wait_for_mentions() - wait for orchestrator
-            2. Receive: "Please generate voice-over for: [TEXT CONTENT HERE]"
-            3. generate_voice_tool(text="[TEXT CONTENT HERE]")
-            4. coral_send_message(content="Voice-over generated successfully: /path/to/audio.mp3", mentions=["orchestrator-agent"])
+            PROGRESS UPDATES:
+            - "Starting Voice Generation" → "Generating Audio" → "Voice Generation Complete"
 
             {os.getenv("CORAL_PROMPT_SYSTEM", default="")}
-
-            Here are the guidelines for using the communication tools:
             {get_tools_description()}
             """
     )

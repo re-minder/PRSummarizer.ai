@@ -37,10 +37,15 @@ const ACTION_ICONS: Record<string, string> = {
 };
 
 const SOURCE_COLORS: Record<string, string> = {
+  'summarizer-agent': '#4F46E5',
+  'risk-agent': '#DC2626',
+  'voice-agent': '#059669',
+  'orchestrator-agent': '#7C3AED',
   summarizer: '#4F46E5',
   risk: '#DC2626',
   voice: '#059669',
   orchestrator: '#7C3AED',
+  backend: '#6B7280',
   default: '#6B7280',
 };
 

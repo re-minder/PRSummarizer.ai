@@ -17,6 +17,7 @@ from typing import Dict, List, Any
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import uvicorn
 from dotenv import load_dotenv
@@ -34,6 +35,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount static files for voice outputs
+import os
+from pathlib import Path
+voice_output_dir = Path(os.getenv("VOICE_OVER_DIR", "voice_over_outputs"))
+voice_output_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/audio", StaticFiles(directory=str(voice_output_dir)), name="audio")
 
 # Configuration
 CORAL_SERVER_URL = "http://localhost:5555"
