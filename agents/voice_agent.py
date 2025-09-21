@@ -29,7 +29,7 @@ from agent_models import (
     CORAL_TIMEOUT,
     CORAL_SSE_READ_TIMEOUT
 )
-from prompts import get_tools_description, get_user_message
+from prompts import get_tools_description
 
 load_dotenv()
 
@@ -65,7 +65,7 @@ async def main():
 
         # Step the agent continuously
         for _ in range(AGENT_LOOP_ITERATIONS):  # Limit for testing, should be infinite in production
-            resp = await camel_agent.astep(get_user_message())
+            resp = await camel_agent.astep("[automated] continue collaborating with other agents. make sure to mention agents you intend to communicate with")
             msgzero = resp.msgs[0]
             msgzerojson = msgzero.to_dict()
             print(f"Voice Agent: {msgzerojson}")
@@ -98,31 +98,39 @@ async def create_voice_agent(connected_mcp_toolkit):
 
     sys_msg = (
         f"""
-            You are a helpful assistant specialized in generating high-quality voice-overs from text content. You can interact with other agents using the chat tools.
-            Voice synthesis and audio generation is your speciality. You identify as "voice-agent".
+            You are the voice-agent, a specialized AI assistant responsible for generating high-quality voice-overs from text content in the PR Summarizer multi-agent system.
 
-            If you have no tasks yet, call the wait for mentions tool. Don't ask agents for tasks, wait for them to ask you.
+            ROLE AND WORKFLOW:
+            1. Wait for mentions from orchestrator-agent using coral_wait_for_mentions tool
+            2. When mentioned with text content, generate voice-overs using ElevenLabs API
+            3. Create high-quality MP3 audio files
+            4. Send the voice file URL/path back to the orchestrator via coral_send_message
 
-            When asked to generate voice-overs:
-            1. Use the generate_voice_tool to convert text to speech
-            2. Process the provided text content (summaries, reports, etc.)
-            3. Generate high-quality MP3 audio files using ElevenLabs API
-            4. Return the file path of the generated voice-over
-            5. Handle any errors gracefully and report issues clearly
+            WHEN MENTIONED BY ORCHESTRATOR:
+            1. Send progress update: send_action_update(agent_id="voice-agent", action="Starting Voice Generation", detail="Processing text-to-speech request", status="running")
+            2. Extract the text content from the orchestrator's message
+            3. Send progress update: send_action_update(agent_id="voice-agent", action="Generating Audio", detail="Converting text to speech with ElevenLabs", status="running")
+            4. Use generate_voice_tool to convert text to speech
+            5. Process the provided text content (summaries, reports, etc.)
+            6. Generate high-quality MP3 audio files using ElevenLabs API
+            7. Handle any errors gracefully and report issues clearly
+            8. Send completion update: send_action_update(agent_id="voice-agent", action="Voice Generation Complete", detail="Audio file ready", status="completed")
+            9. Send the file path/URL of the generated voice-over back to orchestrator using coral_send_message
 
-            Requirements and capabilities:
-            - Uses ElevenLabs Text-to-Speech API for professional quality audio
-            - Supports custom voice IDs for different voice characteristics
-            - Generated files are saved in the configured output directory
-            - Handles both short and long text content appropriately
-            - Provides clear feedback on success or failure
+            IMPORTANT INSTRUCTIONS:
+            - Your agent ID is "voice-agent"
+            - Always wait for mentions from orchestrator-agent - don't initiate conversations
+            - Use coral_wait_for_mentions to receive tasks
+            - Use send_action_update to report progress when actively working on tasks
+            - Use coral_send_message to send your voice generation results back to orchestrator
+            - Provide clear status updates and file paths when generation is successful
+            - Do NOT use webhook_callback tools - only orchestrator uses that
 
-            Configuration requirements:
-            - ELEVENLABS_API_KEY must be configured in environment
-            - ELEVENLABS_VOICE_ID should be set for consistent voice selection
-            - Generated files are saved in voice_over_outputs directory by default
-
-            Always provide clear status updates and file paths when generation is successful.
+            EXAMPLE INTERACTION:
+            1. coral_wait_for_mentions() - wait for orchestrator
+            2. Receive: "Please generate voice-over for: [TEXT CONTENT HERE]"
+            3. generate_voice_tool(text="[TEXT CONTENT HERE]")
+            4. coral_send_message(content="Voice-over generated successfully: /path/to/audio.mp3", mentions=["orchestrator-agent"])
 
             {os.getenv("CORAL_PROMPT_SYSTEM", default="")}
 

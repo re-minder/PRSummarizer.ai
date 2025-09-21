@@ -29,9 +29,19 @@ ORCHESTRATOR_MODEL = ModelFactory.create(
 # SPECIALIZED AGENT MODELS (Domain-specific tasks)
 # =================================================================
 
+# SUMMARIZER_MODEL = ModelFactory.create(
+#     model_platform=ModelPlatformType.AIML,
+#     model_type="openai/gpt-5-2025-08-07",
+#     api_key=os.getenv("SUMMARIZER_API_KEY"),
+#     model_config_dict={
+#         "temperature": 0.1,
+#         "max_tokens": 3000,
+#     },
+# )
+
 SUMMARIZER_MODEL = ModelFactory.create(
-    model_platform=ModelPlatformType.AIML,
-    model_type="openai/gpt-5-2025-08-07",
+    model_platform=ModelPlatformType.NEBIUS,
+    model_type="openai/gpt-oss-120b",
     api_key=os.getenv("SUMMARIZER_API_KEY"),
     model_config_dict={
         "temperature": 0.1,
@@ -39,9 +49,19 @@ SUMMARIZER_MODEL = ModelFactory.create(
     },
 )
 
+# RISK_MODEL = ModelFactory.create(
+#     model_platform=ModelPlatformType.AIML,
+#     model_type="openai/gpt-5-2025-08-07",
+#     api_key=os.getenv("RISK_API_KEY"),
+#     model_config_dict={
+#         "temperature": 0.1,
+#         "max_tokens": 3000,
+#     },
+# )
+
 RISK_MODEL = ModelFactory.create(
-    model_platform=ModelPlatformType.AIML,
-    model_type="openai/gpt-5-2025-08-07",
+    model_platform=ModelPlatformType.NEBIUS,
+    model_type="openai/gpt-oss-120b",
     api_key=os.getenv("RISK_API_KEY"),
     model_config_dict={
         "temperature": 0.1,
@@ -49,9 +69,19 @@ RISK_MODEL = ModelFactory.create(
     },
 )
 
+# VOICE_MODEL = ModelFactory.create(
+#     model_platform=ModelPlatformType.AIML,
+#     model_type="openai/gpt-5-2025-08-07",
+#     api_key=os.getenv("VOICE_API_KEY", os.getenv("SUMMARIZER_API_KEY")),  # Fallback to summarizer key
+#     model_config_dict={
+#         "temperature": 0.1,
+#         "max_tokens": 2000,
+#     },
+# )
+
 VOICE_MODEL = ModelFactory.create(
-    model_platform=ModelPlatformType.AIML,
-    model_type="openai/gpt-5-2025-08-07",
+    model_platform=ModelPlatformType.NEBIUS,
+    model_type="openai/gpt-oss-120b",
     api_key=os.getenv("VOICE_API_KEY", os.getenv("SUMMARIZER_API_KEY")),  # Fallback to summarizer key
     model_config_dict={
         "temperature": 0.1,

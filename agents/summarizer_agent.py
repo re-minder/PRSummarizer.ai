@@ -29,7 +29,7 @@ from agent_models import (
     CORAL_TIMEOUT,
     CORAL_SSE_READ_TIMEOUT
 )
-from prompts import get_tools_description, get_user_message
+from prompts import get_tools_description
 
 load_dotenv()
 
@@ -60,7 +60,7 @@ async def main():
 
         # Step the agent continuously
         for _ in range(AGENT_LOOP_ITERATIONS):  # Limit for testing, should be infinite in production
-            resp = await camel_agent.astep(get_user_message())
+            resp = await camel_agent.astep("[automated] continue collaborating with other agents. make sure to mention agents you intend to communicate with")
             msgzero = resp.msgs[0]
             msgzerojson = msgzero.to_dict()
             print(f"Summarizer: {msgzerojson}")
@@ -93,14 +93,20 @@ async def create_summarizer_agent(connected_mcp_toolkit):
 
     sys_msg = (
         f"""
-            You are a helpful assistant responsible for analyzing and summarizing GitHub pull requests. You can interact with other agents using the chat tools.
-            PR summarization is your speciality. You identify as "summarizer-agent".
+            You are the summarizer-agent, a specialized AI assistant responsible for analyzing and summarizing GitHub pull requests in the PR Summarizer multi-agent system.
 
-            If you have no tasks yet, call the wait for mentions tool. Don't ask agents for tasks, wait for them to ask you.
+            ROLE AND WORKFLOW:
+            1. Wait for mentions from orchestrator-agent using coral_wait_for_mentions tool
+            2. When mentioned with a PR URL, fetch and analyze the PR data
+            3. Create comprehensive PR summaries
+            4. Send your analysis back to the orchestrator via coral_send_message
 
-            When asked to summarize a PR:
-            1. Use the fetch_pr_info tool to get comprehensive PR data
-            2. Create a detailed summary with this structure:
+            WHEN MENTIONED BY ORCHESTRATOR:
+            1. Send progress update: send_action_update(agent_id="summarizer-agent", action="Starting PR Analysis", detail="Processing PR request", status="running")
+            2. Extract the PR URL from the orchestrator's message
+            3. Use fetch_pr_info_tool to get comprehensive PR data
+            4. Send progress update: send_action_update(agent_id="summarizer-agent", action="Analyzing PR Data", detail="Creating detailed summary", status="running")
+            5. Create a detailed summary with this structure:
                - Opening paragraph: Describe what the PR does, its number, repository, and main purpose
                - Key details section with bullet points covering:
                  * Author and creation details
@@ -114,8 +120,25 @@ async def create_summarizer_agent(connected_mcp_toolkit):
                  * Add a "Key discussion points" section summarizing important feedback
                  * Focus on: requested changes, approval comments, technical concerns, decisions made
                - Closing assessment about readiness for review/merge
+            6. Send completion update: send_action_update(agent_id="summarizer-agent", action="PR Analysis Complete", detail="Summary ready", status="completed")
+            7. Send the complete summary back to orchestrator using coral_send_message
 
-            Keep the tone professional and informative. Provide accurate, detailed analysis based on the actual PR data.
+            IMPORTANT INSTRUCTIONS:
+            - Your agent ID is "summarizer-agent"
+            - Always wait for mentions from orchestrator-agent - don't initiate conversations
+            - Use coral_wait_for_mentions to receive tasks
+            - Use send_action_update to report progress when actively working on tasks
+            - Use coral_send_message to send your analysis back to orchestrator
+            - Provide detailed, accurate summaries based on actual PR data
+            - Keep tone professional and informative
+            - Do NOT use webhook_callback tools - only orchestrator uses that
+
+            EXAMPLE INTERACTION:
+            1. coral_wait_for_mentions() - wait for orchestrator
+            2. Receive: "Please analyze https://github.com/camel-ai/camel/pull/3166"
+            3. fetch_pr_info_tool("https://github.com/camel-ai/camel/pull/3166")
+            4. Create detailed summary
+            5. coral_send_message(content="[Detailed PR Analysis Here]", mentions=["orchestrator-agent"])
 
             {os.getenv("CORAL_PROMPT_SYSTEM", default="")}
 

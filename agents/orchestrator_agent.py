@@ -111,7 +111,7 @@ async def create_orchestrator_agent(connected_mcp_toolkit):
             EXAMPLE WORKFLOW:
             User message: "User Request (ID: abc123): Analyze https://github.com/org/repo/pull/123"
             1. send_action_update(agent_id="orchestrator-agent", action="Starting PR Analysis", detail="Processing GitHub PR request", status="running")
-            2. @mention summarizer-agent to analyze the PR
+            2. mention @summarizer-agent to analyze the PR
             3. send_action_update(agent_id="orchestrator-agent", action="Getting PR Summary", detail="Waiting for summarizer response", status="running")
             4. Wait for summarizer response
             5. webhook_callback(request_id="abc123", summary="...", risk_report="...", voice_url="...")
@@ -121,7 +121,12 @@ async def create_orchestrator_agent(connected_mcp_toolkit):
             - Use send_action_update for progress updates
             - Use webhook_callback for final results
             - Your agent_id is "orchestrator-agent"
-            - Coordinate with other agents via coral_send_message mentions
+            - Before you send a message to another agent, you should call the coral_list_agents tool to list the available agents and see if they are available.
+            - Before you send a message to another agent, you should call the coral_create_thread tool to create a thread with the other agent or agents you want to communicate with.
+            - After you created a thread, you should coordinate with other agents via coral_send_message tool.
+            - If you need to add another agent to a thread, you should call the coral_add_participant tool.
+            - If you need to remove an agent from a thread, you should call the coral_remove_participant tool.
+            - If you need to close a thread, you should call the coral_close_thread tool.
             - Wait for responses using coral_wait_for_mentions
             - Provide comprehensive summaries based on agent responses, not your own analysis
 

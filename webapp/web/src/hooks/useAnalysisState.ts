@@ -52,7 +52,8 @@ const analysisReducer = (state: AnalysisState, action: AnalysisAction): Analysis
       const newAction = action.payload;
       const activeAgents = new Set(state.activeAgents);
 
-      if (newAction.source) {
+      // Only count actual AI agents (sources ending with '-agent')
+      if (newAction.source && newAction.source.endsWith('-agent')) {
         if (newAction.status === 'running') {
           activeAgents.add(newAction.source);
         } else if (newAction.status === 'completed') {

@@ -186,7 +186,7 @@ export const ActionTimeline: React.FC<ActionTimelineProps> = ({
   const activeAgentsCount = useMemo(() => {
     return new Set(
       actions
-        .filter(a => a.status === 'running' && a.source)
+        .filter(a => a.status === 'running' && a.source && a.source.endsWith('-agent'))
         .map(a => a.source)
     ).size;
   }, [actions]);
